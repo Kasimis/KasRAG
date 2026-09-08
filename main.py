@@ -1,5 +1,4 @@
-
-
+import ollama
 # load the dataset
 
 dataset = []
@@ -10,8 +9,6 @@ with open('data/cat-facts.txt', 'r', encoding='utf-8') as file:
 
 
 #implement vector db
-
-import ollama
 
 EMBEDDING_MODEL = 'hf.co/CompendiumLabs/bge-base-en-v1.5-gguf'
 LANGUAGE_MODEL = 'hf.co/bartowski/Llama-3.2-1B-Instruct-GGUF'
@@ -51,3 +48,33 @@ def retrieve(query, top_n=3):
   # finally, return the top N most relevant chunks
   return similarities[:top_n]
 
+
+#Generation
+
+input_query = input('Ask me a question: ')
+retrieved_knowledge = retrieve(input_query)
+
+print('Retrieved knowledge:')
+for chunk, similarity in retrieved_knowledge:
+  print(f' - (similarity: {similarity:.2f}) {chunk}')
+
+context = '\n'.join([f' - {chunk}' for chunk, similarity in retrieved_knowledge])
+
+instruction_prompt = f'''You are a helpful chatbot.
+Use only the following pieces of context to answer the question. Don't make up any new information:
+{context}
+'''
+
+stream = ollama.chat(
+  model=LANGUAGE_MODEL,
+  messages=[
+    {'role': 'system', 'content': instruction_prompt},
+    {'role': 'user', 'content': input_query},
+  ],
+  stream=True,
+)
+
+# print the response from the chatbot in real-time
+print('Chatbot response:')
+for chunk in stream:
+  print(chunk['message']['content'], end='', flush=True)
