@@ -1,11 +1,13 @@
 import ollama
+import streamlit as st
+st.header('Cat Facts RAG', divider=True)
 # load the dataset
 
 dataset = []
 with open('data/cat-facts.txt', 'r', encoding='utf-8') as file:
     dataset = file.readlines()
     print(f'Loaded {len(dataset)} entries')
-
+    st.write(f'Loaded {len(dataset)} entries')
 
 
 #implement vector db
@@ -51,12 +53,15 @@ def retrieve(query, top_n=3):
 
 #Generation
 
-input_query = input('Ask me a question: ')
-retrieved_knowledge = retrieve(input_query)
+#streamlit implementation
 
-print('Retrieved knowledge:')
+input_query = st.text_input('Ask me a question: ')
+if not input_query:
+  st.stop()
+retrieved_knowledge = retrieve(input_query)
+st.write('Retrieved knowledge:')
 for chunk, similarity in retrieved_knowledge:
-  print(f' - (similarity: {similarity:.2f}) {chunk}')
+  st.write(f' - (similarity: {similarity:.2f}) {chunk}')
 
 context = '\n'.join([f' - {chunk}' for chunk, similarity in retrieved_knowledge])
 
@@ -75,6 +80,6 @@ stream = ollama.chat(
 )
 
 # print the response from the chatbot in real-time
-print('Chatbot response:')
-for chunk in stream:
-  print(chunk['message']['content'], end='', flush=True)
+st.write('Chatbot response:')
+st.write_stream(chunk['message']['content'] for chunk in stream)
+st.title("Cat Facts Basic RAG")
