@@ -17,16 +17,18 @@ LANGUAGE_MODEL = 'hf.co/bartowski/Llama-3.2-1B-Instruct-GGUF'
 
 # Each element in the VECTOR_DB will be a tuple (chunk, embedding)
 # The embedding is a list of floats, for example: [0.1, 0.04, -0.34, 0.21, ...]
-VECTOR_DB = []
+# Each element in VECTOR_DB is a tuple (chunk, embedding).
+# Streamlit re-runs this script on every interaction, so the embeddings are
+# cached: they are computed once and reused for every subsequent question.
+@st.cache_resource(show_spinner="Embedding the dataset...")
+def build_vector_db():
+  db = []
+  for chunk in dataset:
+    embedding = ollama.embed(model=EMBEDDING_MODEL, input=chunk)['embeddings'][0]
+    db.append((chunk, embedding))
+  return db
 
-def add_chunk_to_database(chunk):
-  embedding = ollama.embed(model=EMBEDDING_MODEL, input=chunk)['embeddings'][0]
-  VECTOR_DB.append((chunk, embedding))
-
-for i, chunk in enumerate(dataset):
-  add_chunk_to_database(chunk)
-  print(f'Added chunk {i+1}/{len(dataset)} to the database')
-
+VECTOR_DB = build_vector_db()
 
 #implement the retrieval function
 
@@ -82,4 +84,4 @@ stream = ollama.chat(
 # print the response from the chatbot in real-time
 st.write('Chatbot response:')
 st.write_stream(chunk['message']['content'] for chunk in stream)
-st.title("Cat Facts Basic RAG")
+
