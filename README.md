@@ -37,8 +37,7 @@ one fact per line. Each line is treated as one chunk.
 
 ## Run it with Docker (recommended)
 
-Needs Docker and nothing else — no Python, no Ollama installed on the host. The runtime
-ships with the app.
+Needs Docker and nothing else 
 
 ```bash
 git clone https://github.com/Kasimis/KasRAG.git
@@ -55,7 +54,7 @@ docker compose exec ollama ollama pull hf.co/bartowski/Llama-3.2-1B-Instruct-GGU
 
 Open <http://localhost:8501>.
 
-The models are about 1.5 GB and live in a named volume, so they are downloaded once and
+The models are about 3 GB and live in a named volume, so they are downloaded once and
 survive restarts. Give Docker at least 6 GB of memory — the language model is killed with
 less.
 
