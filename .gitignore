@@ -1,0 +1,47 @@
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+
+# ---- Virtual environments ----
+.venv/
+venv/
+env/
+ENV/
+
+# ---- Secrets / local config ----
+# Nothing in this project needs an API key today, but that changes the
+# moment a hosted model provider is added. Ignore them pre-emptively.
+.env
+.env.*
+!.env.example
+secrets.toml
+.streamlit/secrets.toml
+*.pem
+*.key
+
+# ---- Generated artifacts ----
+# The embedding index is rebuilt from data/ in a couple of minutes.
+# It is large, binary, and machine-specific: never commit it.
+vector_db.pkl
+*.pkl
+*.gguf
+*.bin
+
+# ---- IDE ----
+.idea/
+.vscode/
+*.iml
+
+# ---- OS ----
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---- Notebooks ----
+.ipynb_checkpoints/
